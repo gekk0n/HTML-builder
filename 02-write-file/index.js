@@ -1,29 +1,25 @@
 const path = require('path');
 const fs = require('fs');
 const {stdin, stdout, exit} = process;
-
+const filePath = path.join(__dirname, 'lyrics.txt');
+console.log(5);
 fs.writeFile(
-  path.join(__dirname, 'lyrics.txt'), '', err => {
+  filePath, '', err => {
     if (err) throw err;
   }
 );
 stdout.write('Ведите текст любимой песни:\n');
 
 stdin.on('data', data => {
-  let str = data.toString().trim();
-  if (str === 'exit') {
+  if (data.toString().trim() === 'exit') {
     exit();
   }
-  if (fs.existsSync(path.join(__dirname, 'lyrics.txt'))) {
-    fs.appendFile(
-      path.join(__dirname, 'lyrics.txt'), data, err => {
-        if (err) throw err;
-      }
-    );
+  if (fs.existsSync(filePath)) {
+    fs.appendFile(filePath, data, err => {
+      if (err) throw err;
+    });
   }
-  
 });
 
 process.on('exit', () => stdout.write('Спасибо! Вы поёте великолепно!'));
-// process.on('SIGNIT', () => stdout.write('Спасибо! Вы поёте великолепно!'));
 process.on('SIGINT', () => process.exit());
