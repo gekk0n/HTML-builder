@@ -2,7 +2,6 @@ const path = require('path');
 const fs = require('fs');
 const {stdin, stdout, exit} = process;
 const filePath = path.join(__dirname, 'lyrics.txt');
-console.log(5);
 fs.writeFile(
   filePath, '', err => {
     if (err) throw err;
