@@ -13,7 +13,7 @@ stdin.on('data', data => {
   if (data.toString().trim() === 'exit') {
     exit();
   }
-  if (fs.existsSync(filePath)) {
+  if (filePath) {
     fs.appendFile(filePath, data, err => {
       if (err) throw err;
     });
