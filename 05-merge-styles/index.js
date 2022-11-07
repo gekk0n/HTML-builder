@@ -6,10 +6,7 @@ const bundlePath = path.join(__dirname, 'project-dist\\bundle.css');
 fs.writeFile(bundlePath, '', (err) => {
   if (err) throw err;
 });
-fs.readdir(stylesPath, 
-  {encoding: 'utf-8',
-    withFileTypes: true,
-  },
+fs.readdir(stylesPath, { withFileTypes: true },
   (err, file) => {
     if (err) throw err;
     file.forEach(el => {
@@ -19,12 +16,5 @@ fs.readdir(stylesPath,
           fs.appendFile(bundlePath, data, () =>{});
         });
       }
-      
     });
-    // file.forEach(() => {
-    //   fs.stat(stylesPath, (err, stats) => {
-    //     if (err) throw err;
-    //     console.log(stats);
-    //   });
-    // });
   });
