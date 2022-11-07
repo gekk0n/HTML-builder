@@ -9,8 +9,6 @@ const stylesFolder = path.join(__dirname, 'styles');
 const componentsFolder = path.join(__dirname, 'components');
 const re = /{{.{0,}}}/gm;
 
-
-
 async function createFolders () {
   await fsPromises.mkdir(projectFolder, { recursive: true});
   fs.cp(assetsFolder, distAssetsFolder, {recursive: true}, (err) => {
@@ -18,18 +16,13 @@ async function createFolders () {
   });
 }
 
-
 async function createHtml () {
   await fsPromises.copyFile(templatefile, path.join(projectFolder, 'template.html'));
   await fsPromises.rename(path.join(projectFolder, 'template.html'), path.join(projectFolder, 'index.html'));
   fs.readFile(path.join(projectFolder, 'index.html'), 'utf8', (err, data) => {
     if (err) throw err;
     let indexContent = data.toString();
-
-
     let templateTags = indexContent.match(re);
-    
-
     templateTags.forEach(tag => {
       let currentTag = tag.replace(/[^a-z]/gi, '');
       fs.readFile(path.join(componentsFolder, `${currentTag}.html`), {withFileTypes: true}, (err, data) => {
@@ -42,13 +35,7 @@ async function createHtml () {
       });
     });
   });
-  
-  // console.log(resultPage);
-  
 }
-// console.log(path.parse(path.join(projectFolder, 'index.html')));
-
-
 
 async function copyStyles () {
   fs.writeFile(path.join(projectFolder, 'style.css'), '', (err) => {
@@ -69,8 +56,6 @@ async function copyStyles () {
     });
   });
 }
-
-
 
 async function buildPage() {
   await createFolders();
