@@ -6,12 +6,6 @@ const filesPath = path.join(__dirname, 'files');
 
 async function copyDirectory () {
   await fsPromises.mkdir(copyPath, {recursive: true});
-  const files = await fsPromises.readdir(copyPath);
-  files.forEach((file) => {
-    fs.rm(path.join(__dirname, 'files-copy', `${file}`), (err) => {
-      if (err) throw err;
-    });
-  }); 
   await fsPromises.access(filesPath);
   fs.readdir(filesPath, 'utf-8', (err, file) => {
     if (err) throw err;
@@ -23,5 +17,9 @@ async function copyDirectory () {
   });
 }
 
+async function updateFolder(files, filesCopy) {
+  await fs.promises.rm(filesCopy, { recursive: true, force: true });
+  copyDirectory(files, filesCopy);
+}
 
-copyDirectory ();
+updateFolder (filesPath, copyPath);
