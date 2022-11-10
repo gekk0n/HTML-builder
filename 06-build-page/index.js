@@ -19,23 +19,31 @@ async function createFolders () {
 async function createHtml () {
   await fsPromises.copyFile(templatefile, path.join(projectFolder, 'template.html'));
   await fsPromises.rename(path.join(projectFolder, 'template.html'), path.join(projectFolder, 'index.html'));
-  fs.readFile(path.join(projectFolder, 'index.html'), 'utf8', (err, data) => {
-    if (err) throw err;
-    let indexContent = data.toString();
-    let templateTags = indexContent.match(re);
-    templateTags.forEach(tag => {
-      let currentTag = tag.replace(/[^a-z]/gi, '');
-      fs.readFile(path.join(componentsFolder, `${currentTag}.html`), {withFileTypes: true}, (err, data) => {
-        if (err) throw err;
-        let content = data.toString();
-        indexContent = indexContent.replace(`{{${currentTag}}}`, content);
-        fs.writeFile(path.join(projectFolder, 'index.html'), indexContent, (err) => {
+  
+  async function readIndex () {
+    await fsPromises.access(path.join(projectFolder, 'index.html'));
+    fs.readFile(path.join(projectFolder, 'index.html'), 'utf8', (err, data) => {
+      if (err) throw err;
+      let indexContent = data.toString();
+      let templateTags = indexContent.match(re);
+      templateTags.forEach(async tag => {
+        let currentTag = tag.replace(/[^a-z]/gi, '');
+        await fsPromises.access(path.join(componentsFolder, `${currentTag}.html`));
+        fs.readFile(path.join(componentsFolder, `${currentTag}.html`), {withFileTypes: true}, (err, data) => {
           if (err) throw err;
+          let content = data.toString();
+          indexContent = indexContent.replace(`{{${currentTag}}}`, content);
+          fs.writeFile(path.join(projectFolder, 'index.html'), indexContent, (err) => {
+            if (err) throw err;
+          });
         });
       });
     });
-  });
+  }
+  await readIndex ();
 }
+
+
 
 async function copyStyles () {
   fs.writeFile(path.join(projectFolder, 'style.css'), '', (err) => {
@@ -47,8 +55,8 @@ async function copyStyles () {
   (err, file) => {
     if (err) throw err;
     file.forEach(el => {
-      if (el.isFile() && path.extname(`${stylesFolder}\\${el.name}`) === '.css') {
-        fs.readFile(`${stylesFolder}\\${el.name}`, 'utf-8', (err, data) => {
+      if (el.isFile() && path.extname(path.join(stylesFolder, `${el.name}`)) === '.css') {
+        fs.readFile(path.join(stylesFolder, `${el.name}`), 'utf-8', (err, data) => {
           if (err) throw err;
           fs.appendFile(path.join(projectFolder, 'style.css'), data, () => {});
         });
